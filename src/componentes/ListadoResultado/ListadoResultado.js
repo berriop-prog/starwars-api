@@ -9,7 +9,6 @@ function ListadoResultado({ api=[], paginaActual=1 }) {
         {
             api && api.map ? (
                 api.map((personaje, key) => {
-                    console.log('hola');
                     if ((key >= (paginaActual * 9) - 9) && (key <= (paginaActual * 9) - 1)) {
                         return (
                             <Personaje key={key} personaje={personaje} />

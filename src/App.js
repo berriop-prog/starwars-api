@@ -1,91 +1,104 @@
-import React, { useState, useEffect } from 'react';
+import React, { Component } from 'react';
 import Buscador from './componentes/Buscador';
 import ListadoResultado from './componentes/ListadoResultado/ListadoResultado';
 import './App.css';
 
 const NUMERO_RESULTADOS_POR_VISTA = 9;
 
-function App() {
-  const [busqueda, guardarBusqueda] = useState('');
-  const [api, guardarRespuestaApi] = useState([]);
-  const [paginaActual, guardarPaginaActual] = useState(1);
-  const [totalPaginas, guardarTotalPaginas] = useState(1);
-  const [url, guardarUrl] = useState(`https://swapi.dev/api/people/`);
-
-  useEffect(() => {
-    const consultarApi = async () => {
-      const respuesta = await fetch(url);
-      const json = await respuesta.json();
-      if (api.length < json.count) {
-        guardarRespuestaApi([ ...api, ...json.results ]);
-        guardarUrl(json.next);
-      }
-      //calcular total de paginas
-      const calcularTotalPaginas = Math.ceil(
-        json.count / NUMERO_RESULTADOS_POR_VISTA
-      );
-      guardarTotalPaginas(calcularTotalPaginas);
-      //Mover la pantalla hacia la parte de arriba
-      const jumbotron = document.querySelector('.jumbotron');
-      jumbotron.scrollIntoView({ behavior: "smooth", block: "end"});
+class App extends Component {
+  
+  constructor(props) {
+    super(props);
+    this.state = {
+      busqueda: '',
+      api: [],
+      paginaActual: 1,
+      totalPaginas: 1,
+      url: 'https://swapi.dev/api/people/',
+      totalPersonajes: 0
     }
-    consultarApi();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [busqueda, paginaActual]);
+  }
 
-  const paginaAnterior = () => {
-    console.log('paginaAnterior');
-    let nuevaPaginaActual = paginaActual - 1;
-    guardarPaginaActual(nuevaPaginaActual);
-  };
+  async componentDidMount() {
+    const api = await this.consultarApi();
+    //calcular total de paginas
+    const calcularTotalPaginas = Math.ceil(
+      api.count / NUMERO_RESULTADOS_POR_VISTA
+    );
+    this.setState({ api: api.results, url: api.next, totalPaginas: calcularTotalPaginas, totalPersonajes: api.count });
+    //Mover la pantalla hacia la parte de arriba
+    const jumbotron = document.querySelector('.jumbotron');
+    jumbotron.scrollIntoView({ behavior: "smooth", block: "end"});
+  }
 
-  const paginaSiguiente = () => {
-    console.log('paginaSiguiente');
-    let nuevaPaginaActual = paginaActual + 1;
-    guardarPaginaActual(nuevaPaginaActual);
-  };
-  console.log(paginaActual);
-  return (
-    <div className="app container">
-      <div className="jumbotron">
-        <p className="lead text-center">Buscador</p>
-        <Buscador guardarBusqueda={guardarBusqueda} />
-      </div>
-      <div>
-        <ListadoResultado api={api} paginaActual={paginaActual} />
-      </div>
-      <div className="row justify-content-center">
+  consultarApi = async () => {
+    const respuesta = await fetch(this.state.url);
+    const json = await respuesta.json();
+    return json;
+  }
 
-        {paginaActual === 1 ? (
-          <button type="button"
-            className="btn btn-outline-warning">
-            &laquo; Anterior{' '}
-          </button>
-        ) : (
-          <button onClick={paginaAnterior}
-            type="button"
-            className="btn btn-outline-warning">
-            &laquo; Anterior{' '}
-          </button>
-        )}
-        <div className="pagina-actual">
-          <span>{paginaActual}</span>
+  paginaAnterior = async () => {
+    let nuevaPaginaActual = this.state.paginaActual - 1;
+    this.setState({ paginaActual: nuevaPaginaActual });
+    const jumbotron = document.querySelector('.jumbotron');
+    jumbotron.scrollIntoView({ behavior: "smooth", block: "end"});
+  }
+
+  paginaSiguiente = async () => {
+    let nuevaPaginaActual = this.state.paginaActual + 1;
+    if (this.state.api.length === this.state.totalPersonajes) {
+      this.setState({ paginaActual: nuevaPaginaActual });
+    } else {
+      const api = await this.consultarApi();
+      this.setState({ api: [ ...this.state.api, ...api.results ], url: api.next, paginaActual: nuevaPaginaActual });
+    }
+    const jumbotron = document.querySelector('.jumbotron');
+    jumbotron.scrollIntoView({ behavior: "smooth", block: "end"});
+  }
+  
+  render() {
+    return (
+      <div className="app container">
+        <div className="jumbotron">
+          <p className="lead text-center">Buscador</p>
+          <Buscador guardarBusqueda={(e) => this.setState(e)} />
         </div>
-        {paginaActual < totalPaginas ? (
-          <button onClick={paginaSiguiente}
-            type="button"
-            className="btn btn-outline-warning">
-            Siguiente &raquo;
-          </button>
-        ) : (
-          <button type="button"
-            className="btn btn-outline-warning">
-            Siguiente &raquo;
-          </button>
-        )}
+        <div>
+          <ListadoResultado api={this.state.api} paginaActual={this.state.paginaActual} />
+        </div>
+        <div className="row justify-content-center">
+
+          {this.state.paginaActual === 1 ? (
+            <button type="button"
+              className="btn btn-outline-warning">
+              &laquo; Anterior{' '}
+            </button>
+          ) : (
+            <button onClick={this.paginaAnterior}
+              type="button"
+              className="btn btn-outline-warning">
+              &laquo; Anterior{' '}
+            </button>
+          )}
+          <div className="pagina-actual">
+            <span>{this.state.paginaActual}/{this.state.totalPaginas}</span>
+          </div>
+          {this.state.paginaActual < this.state.totalPaginas ? (
+            <button onClick={this.paginaSiguiente}
+              type="button"
+              className="btn btn-outline-warning">
+              Siguiente &raquo;
+            </button>
+          ) : (
+            <button type="button"
+              className="btn btn-outline-warning">
+              Siguiente &raquo;
+            </button>
+          )}
+        </div>
       </div>
-    </div>
-  );
+    );
+  }
 }
 
 export default App;
