@@ -2,7 +2,7 @@ import React from 'react';
 
 function Paginacion({ state, paginaAnterior, paginaSiguiente }) {
     return (
-        <div className="row justify-content-center">
+        <div className="row justify-content-center mt-4">
           {state.paginaActual === 1 ? (
             <button type="button" className="btn btn-outline-warning">
               &laquo; Anterior{' '}

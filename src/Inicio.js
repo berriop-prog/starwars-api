@@ -64,9 +64,9 @@ class Inicio extends Component {
 
   render() {
     return (
-      <div className="app container">
-        <div className="jumbotron text-center">
-            <h1>Visor de StarWars</h1>
+      <div className="app container m-4">
+        <div className="jumbotron text-center ">
+            <h1>Visor de Star Wars</h1>
         </div>
         <div>
           <ListadoResultado
