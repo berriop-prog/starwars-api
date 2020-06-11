@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import Buscador from './componentes/Buscador';
 import ListadoResultado from './componentes/ListadoResultado/ListadoResultado';
+import Paginacion from './componentes/Paginacion/Paginacion';
 
 const NUMERO_RESULTADOS_POR_VISTA = 9;
 
@@ -8,14 +8,11 @@ class Inicio extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      busqueda: '',
       api: [],
       paginaActual: 1,
       totalPaginas: 1,
       url: 'https://swapi.dev/api/people/',
       totalPersonajes: 0,
-      name: '',
-      birth_year: '',
     };
   }
 
@@ -40,14 +37,14 @@ class Inicio extends Component {
     const respuesta = await fetch(this.state.url);
     const json = await respuesta.json();
     return json;
-  };
+  }
 
   paginaAnterior = async () => {
     let nuevaPaginaActual = this.state.paginaActual - 1;
     this.setState({ paginaActual: nuevaPaginaActual });
     const jumbotron = document.querySelector('.jumbotron');
     jumbotron.scrollIntoView({ behavior: 'smooth', block: 'end' });
-  };
+  }
 
   paginaSiguiente = async () => {
     let nuevaPaginaActual = this.state.paginaActual + 1;
@@ -63,53 +60,22 @@ class Inicio extends Component {
     }
     const jumbotron = document.querySelector('.jumbotron');
     jumbotron.scrollIntoView({ behavior: 'smooth', block: 'end' });
-  };
+  }
 
   render() {
     return (
       <div className="app container">
-        <div className="jumbotron">
-          <p className="lead text-center">Buscador</p>
-          <Buscador guardarBusqueda={(e) => this.setState(e)} />
+        <div className="jumbotron text-center">
+            <h1>Visor de StarWars</h1>
         </div>
         <div>
           <ListadoResultado
             api={this.state.api}
-            paginaActual={this.state.paginaActual} />          
-        </div>        
-        <div className="row justify-content-center">
-          {this.state.paginaActual === 1 ? (
-            <button type="button" className="btn btn-outline-warning">
-              &laquo; Anterior{' '}
-            </button>
-          ) : (
-            <button
-              onClick={this.paginaAnterior}
-              type="button"
-              className="btn btn-outline-warning"
-            >
-              &laquo; Anterior{' '}
-            </button>
-          )}
-          <div className="pagina-actual">
-            <span>
-              {this.state.paginaActual}/{this.state.totalPaginas}
-            </span>
-          </div>
-          {this.state.paginaActual < this.state.totalPaginas ? (
-            <button
-              onClick={this.paginaSiguiente}
-              type="button"
-              className="btn btn-outline-warning"
-            >
-              Siguiente &raquo;
-            </button>
-          ) : (
-            <button type="button" className="btn btn-outline-warning">
-              Siguiente &raquo;
-            </button>
-          )}
-        </div>
+            paginaActual={this.state.paginaActual}
+            history={this.props.history} />          
+        </div> 
+        <Paginacion state={this.state} paginaAnterior={this.paginaAnterior} paginaSiguiente={this.paginaSiguiente} />       
+   
       </div>
     );
   }

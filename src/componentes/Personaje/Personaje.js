@@ -1,9 +1,8 @@
 import React from 'react';
 import './Personaje.css'
 
-const Personaje = ({name, birth_year }) => {
-    //se llaman las propiedades que se quieren mostrar sacadas el api
-   
+const Personaje = ({ personaje: { name, birth_year }, history }) => {
+   const nombreNormalizado = name.toLowerCase().replace(/[\s]/g, '-');
     return (
         <div className="contenedor-personajes">
             <div className="card w-100 h-100">             
@@ -13,9 +12,8 @@ const Personaje = ({name, birth_year }) => {
              </div>
 
             <div className="card-footer">
-                <a href="/personaje"  className="btn btn-outline-warning btn-block">Ver más</a>
+                <button onClick={() => history.push(`/personaje/${nombreNormalizado}`)}  className="btn btn-outline-warning btn-block">Ver más</button>
             </div>
-
             </div>
         </div>
     );
