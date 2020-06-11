@@ -75,10 +75,7 @@ class Inicio extends Component {
         <div>
           <ListadoResultado
             api={this.state.api}
-            paginaActual={this.state.paginaActual}
-            name={this.state.name}
-            birth_year={this.state.birth_year}
-          />
+            paginaActual={this.state.paginaActual} />          
         </div>        
         <div className="row justify-content-center">
           {this.state.paginaActual === 1 ? (

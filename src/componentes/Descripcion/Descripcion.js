@@ -1,7 +1,8 @@
 import React from 'react';
+import Botones from '../Botones/Botones'
 
 const Descripcion = ({name, gender, hair_color, height, birth_year, eye_color, skin_color }) => {
-    
+
     return (
         <div className="container">
             <div className="card w-100 h-100">             
@@ -16,8 +17,7 @@ const Descripcion = ({name, gender, hair_color, height, birth_year, eye_color, s
              </div>
 
              <div className="container text-center m-2">
-                <button type="button" class="btn btn-outline-warning">Me gusta</button>        
-                <button type="button" class="btn btn-outline-danger">No me gusta</button>
+                <Botones />
              </div>
             </div>
         </div>
